@@ -1,0 +1,18 @@
+# HTTPS gateway for the Coverage Cat agent.
+# sslip.io resolves 168-144-144-87.sslip.io -> 168.144.144.87, so Let's
+# Encrypt can issue a real cert without owning a domain.
+
+168-144-144-87.sslip.io {
+
+	handle_path /coveragecat/* {
+		reverse_proxy agent:8000
+	}
+
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	handle {
+		respond "Coverage Cat agent gateway" 200
+	}
+}

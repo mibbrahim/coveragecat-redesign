@@ -1,0 +1,35 @@
+# Coverage Cat agent — standalone stack on the DigitalOcean droplet.
+# Completely separate from the BotCro compose project: its own network,
+# its own Caddy on 80/443 (which were unused on this droplet).
+#
+#   cd /root/coveragecat-agent
+#   docker compose up -d --build
+#
+# Public endpoint: https://168-144-144-87.sslip.io/coveragecat/chat
+
+name: coveragecat
+
+services:
+  agent:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - agent
+
+volumes:
+  caddy_data:
+  caddy_config:
